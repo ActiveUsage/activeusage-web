@@ -1,0 +1,1 @@
+ENV.store("ACTIVEUSAGE_PASSWORD", "admin")
