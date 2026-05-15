@@ -1,17 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Active usage web</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ActiveUsage<%= content_for?(:title) ? " — #{content_for(:title)}" : "" %></title>
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
-
-  <%= yield :head %>
-
-  <%= stylesheet_link_tag    "active_usage/web/application", media: "all" %>
+  <%= stylesheet_link_tag "active_usage/web/application", media: "all" %>
 </head>
 <body>
+  <nav class="au-nav">
+    <%= link_to root_path, class: "au-brand" do %>
+      <span class="au-brand-diamond">◆</span>
+      <span class="au-brand-name">ActiveUsage</span>
+    <% end %>
+    <div class="au-nav-links">
+      <%= link_to root_path,
+            class: "au-nav-link#{' au-nav-link--active' if controller_name == 'home'}" do %>
+        Overview
+      <% end %>
+      <%= link_to configurations_path,
+            class: "au-nav-link#{' au-nav-link--active' if controller_name == 'configurations'}" do %>
+        Configuration
+      <% end %>
+    </div>
+  </nav>
 
-<%= yield %>
-
+  <div class="au-page">
+    <% if notice.present? %>
+      <div class="au-flash au-flash--notice"><%= notice %></div>
+    <% end %>
+    <% if alert.present? %>
+      <div class="au-flash au-flash--alert"><%= alert %></div>
+    <% end %>
+    <%= yield %>
+  </div>
 </body>
 </html>

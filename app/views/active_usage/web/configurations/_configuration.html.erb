@@ -1,12 +1,19 @@
 <div id="<%= dom_id configuration %>">
-  <div>
-    <strong>Compute cost per hour:</strong>
-    <%= configuration.compute_cost_per_hour %>
+  <div class="au-def">
+    <div class="au-def-item">
+      <div class="au-def-label">Compute cost per hour</div>
+      <div class="au-def-value"><%=configuration.compute_cost_per_hour %></div>
+    </div>
+    <div class="au-def-item">
+      <div class="au-def-label">Database cost per hour</div>
+      <div class="au-def-value"><%=configuration.database_cost_per_hour %></div>
+    </div>
   </div>
-
-  <div>
-    <strong>Database cost per hour:</strong>
-    <%= configuration.database_cost_per_hour %>
+  <div class="au-card-footer">
+    <span class="au-card-footer-label">Active since</span>
+    <%= configuration.created_at.strftime("%-d %b %Y, %H:%M") %>
+    <% if local_assigns[:current] %>
+      <span class="au-badge-current">Current</span>
+    <% end %>
   </div>
-
 </div>

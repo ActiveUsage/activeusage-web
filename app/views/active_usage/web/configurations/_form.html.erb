@@ -1,27 +1,25 @@
 <%= form_with(model: configuration) do |form| %>
-  <% if configuration.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(configuration.errors.count, "error") %> prohibited this configuration from being saved:</h2>
-
-      <ul>
-        <% configuration.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+  <div class="au-def">
+    <div class="au-def-item">
+      <%= form.label :compute_cost_per_hour, "Compute cost per hour", class: "au-def-label" %>
+      <%= form.text_field :compute_cost_per_hour,
+            class: "au-def-input#{ ' au-def-input--error' if configuration.errors[:compute_cost_per_hour].any? }",
+            placeholder: "0.0000" %>
+      <% configuration.errors[:compute_cost_per_hour].each do |msg| %>
+        <span class="au-field-error"><%= msg %></span>
+      <% end %>
     </div>
-  <% end %>
-
-  <div>
-    <%= form.label :compute_cost_per_hour, style: "display: block" %>
-    <%= form.text_field :compute_cost_per_hour %>
+    <div class="au-def-item">
+      <%= form.label :database_cost_per_hour, "Database cost per hour", class: "au-def-label" %>
+      <%= form.text_field :database_cost_per_hour,
+            class: "au-def-input#{ ' au-def-input--error' if configuration.errors[:database_cost_per_hour].any? }",
+            placeholder: "0.0000" %>
+      <% configuration.errors[:database_cost_per_hour].each do |msg| %>
+        <span class="au-field-error"><%= msg %></span>
+      <% end %>
+    </div>
   </div>
-
-  <div>
-    <%= form.label :database_cost_per_hour, style: "display: block" %>
-    <%= form.text_field :database_cost_per_hour %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+  <div class="au-card-footer">
+    <%= form.submit "Save", class: "au-btn au-btn-primary au-ml-auto" %>
   </div>
 <% end %>

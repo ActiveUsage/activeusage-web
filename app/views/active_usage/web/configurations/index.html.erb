@@ -1,16 +1,28 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, "Configuration" %>
 
-<% content_for :title, "Configurations" %>
-
-<h1>Configurations</h1>
-
-<div id="configurations">
-  <% @configurations.each do |configuration| %>
-    <%= render configuration %>
-    <p>
-      <%= link_to "Show this configuration", configuration %>
-    </p>
-  <% end %>
+<div class="au-page-header">
+  <div>
+    <h1 class="au-page-title">Configuration</h1>
+    <p class="au-page-sub">Each entry is a version — the newest one is currently active.</p>
+  </div>
+  <%= link_to "New version", new_configuration_path, class: "au-btn au-btn-primary" %>
 </div>
 
-<%= link_to "New configuration", new_configuration_path %>
+<% if @configurations.any? %>
+  <div class="au-stack">
+    <% @configurations.each_with_index do |configuration, i| %>
+      <div class="au-card">
+        <%= render configuration, current: i.zero? %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="au-card">
+    <div class="au-empty">
+      <div class="au-empty-icon">◆</div>
+      <p class="au-empty-title">No configuration yet</p>
+      <p class="au-empty-desc">Add the first version to start tracking usage costs.</p>
+      <%= link_to "New version", new_configuration_path, class: "au-btn au-btn-primary" %>
+    </div>
+  </div>
+<% end %>
