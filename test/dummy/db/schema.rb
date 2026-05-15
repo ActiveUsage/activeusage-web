@@ -10,5 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 0) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_15_090137) do
+  create_table "active_usage_web_configurations", force: :cascade do |t|
+    t.decimal "compute_cost_per_hour", precision: 12, scale: 4, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.decimal "database_cost_per_hour", precision: 12, scale: 4, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+  end
 end
