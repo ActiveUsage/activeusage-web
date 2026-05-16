@@ -1,0 +1,17 @@
+<% if paginator.total_pages > 1 %>
+  <div class="au-pagination">
+    <% if paginator.prev_page %>
+      <%= link_to "← Previous", request.params.merge("page" => paginator.prev_page), class: "au-pagination-btn" %>
+    <% else %>
+      <span class="au-pagination-btn au-pagination-btn--disabled">← Previous</span>
+    <% end %>
+
+    <span class="au-pagination-info">Page <%= paginator.page %> of <%= paginator.total_pages %></span>
+
+    <% if paginator.next_page %>
+      <%= link_to "Next →", request.params.merge("page" => paginator.next_page), class: "au-pagination-btn" %>
+    <% else %>
+      <span class="au-pagination-btn au-pagination-btn--disabled">Next →</span>
+    <% end %>
+  </div>
+<% end %>

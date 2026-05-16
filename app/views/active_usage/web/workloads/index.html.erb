@@ -1,0 +1,51 @@
+<% content_for :title, "Workloads" %>
+
+<div class="au-page-header">
+  <div>
+    <h1 class="au-page-title">Workloads</h1>
+    <p class="au-page-sub">Full workload ranking by estimated cost.</p>
+  </div>
+</div>
+
+<%= render "active_usage/web/shared/filters" %>
+
+<% top_cost_max = @workloads.map { |r| r[:total_cost] }.max.to_f %>
+
+<div class="au-card">
+  <div class="au-metric-list">
+    <% if @workloads.empty? %>
+      <div class="au-empty">
+        <div class="au-empty-icon">◆</div>
+        <p class="au-empty-title">No workloads found</p>
+        <p class="au-empty-desc">No events recorded in the selected time window.</p>
+      </div>
+    <% else %>
+      <% @workloads.each do |row| %>
+        <div class="au-metric-row">
+          <div class="au-metric-row-top">
+            <div class="au-metric-main">
+              <div class="au-metric-name-row">
+                <span class="au-badge <%= event_type_class(row[:event_type]) %>"><%= row[:event_type] %></span>
+                <div class="au-metric-name"><%= row[:name] %></div>
+              </div>
+              <div class="au-metric-meta">
+                <%= row[:events_count] %> events
+                <% if row[:last_seen_at] %>
+                  · last seen <%= time_ago_in_words(row[:last_seen_at]) %> ago
+                <% end %>
+              </div>
+            </div>
+            <div class="au-metric-stats">
+              <div class="au-metric-value"><%= money(row[:total_cost]) %></div>
+              <div class="au-metric-meta">estimated total</div>
+            </div>
+          </div>
+          <div class="au-progress-track">
+            <div class="au-progress-fill" style="width: <%= progress_width(row[:total_cost], top_cost_max) %>%"></div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+  <%= render "active_usage/web/shared/pagination", paginator: @paginator %>
+</div>

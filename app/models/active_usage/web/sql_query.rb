@@ -1,6 +1,6 @@
 module ActiveUsage
   module Web
-    module ConfigurationsHelper
+    class SqlQuery < ApplicationRecord
     end
   end
 end

@@ -9,31 +9,75 @@
   <%= stylesheet_link_tag "active_usage/web/application", media: "all" %>
 </head>
 <body>
-  <nav class="au-nav">
-    <%= link_to root_path, class: "au-brand" do %>
-      <span class="au-brand-diamond">◆</span>
-      <span class="au-brand-name">ActiveUsage</span>
-    <% end %>
-    <div class="au-nav-links">
-      <%= link_to root_path,
-            class: "au-nav-link#{' au-nav-link--active' if controller_name == 'home'}" do %>
-        Overview
+  <div class="au-app">
+    <aside class="au-sidebar">
+      <%= link_to root_path, class: "au-sidebar-brand" do %>
+        <span class="au-brand-icon">◆</span>
+        <span class="au-brand-name">ActiveUsage</span>
       <% end %>
-      <%= link_to configurations_path,
-            class: "au-nav-link#{' au-nav-link--active' if controller_name == 'configurations'}" do %>
-        Configuration
-      <% end %>
-    </div>
-  </nav>
 
-  <div class="au-page">
-    <% if notice.present? %>
-      <div class="au-flash au-flash--notice"><%= notice %></div>
-    <% end %>
-    <% if alert.present? %>
-      <div class="au-flash au-flash--alert"><%= alert %></div>
-    <% end %>
-    <%= yield %>
+      <nav class="au-sidebar-nav">
+        <p class="au-sidebar-section">Analytics</p>
+        <%= link_to root_path,
+              class: "au-sidebar-link#{' au-sidebar-link--active' if controller_name == 'home'}" do %>
+          <%= au_icon(:overview) %>
+          Overview
+        <% end %>
+        <%= link_to trends_path,
+              class: "au-sidebar-link#{' au-sidebar-link--active' if controller_name == 'trends'}" do %>
+          <%= au_icon(:trends) %>
+          Trends
+        <% end %>
+        <%= link_to workloads_path,
+              class: "au-sidebar-link#{' au-sidebar-link--active' if controller_name == 'workloads'}" do %>
+          <%= au_icon(:workloads) %>
+          Workloads
+        <% end %>
+        <%= link_to sql_queries_path,
+              class: "au-sidebar-link#{' au-sidebar-link--active' if controller_name == 'sql_queries'}" do %>
+          <%= au_icon(:sql_queries) %>
+          SQL Queries
+        <% end %>
+        <%= link_to events_path,
+              class: "au-sidebar-link#{' au-sidebar-link--active' if controller_name == 'events'}" do %>
+          <%= au_icon(:events) %>
+          Events
+        <% end %>
+
+        <p class="au-sidebar-section au-sidebar-section--top">Settings</p>
+        <%= link_to cost_rates_path,
+              class: "au-sidebar-link#{' au-sidebar-link--active' if controller_name == 'cost_rates'}" do %>
+          <%= au_icon(:cost_rates) %>
+          Cost rates
+        <% end %>
+      </nav>
+    </aside>
+
+    <main class="au-main">
+      <% if notice.present? %>
+        <div class="au-flash au-flash--notice"><%= notice %></div>
+      <% end %>
+      <% if alert.present? %>
+        <div class="au-flash au-flash--alert"><%= alert %></div>
+      <% end %>
+      <div class="au-page">
+        <% if show_cost_rates_banner? %>
+          <div class="au-onboarding-banner">
+            <svg class="au-onboarding-banner-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <div class="au-onboarding-banner-text">
+              <strong>No cost rates configured.</strong>
+              Events are recorded but costs show as $0 until you set hourly compute and database rates.
+            </div>
+            <%= link_to "Set up →", new_cost_rate_path, class: "au-onboarding-banner-link" %>
+          </div>
+        <% end %>
+        <%= yield %>
+      </div>
+    </main>
   </div>
 </body>
 </html>

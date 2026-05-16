@@ -1,0 +1,56 @@
+<% content_for :title, "SQL Queries" %>
+
+<div class="au-page-header">
+  <div>
+    <h1 class="au-page-title">SQL Queries</h1>
+    <p class="au-page-sub">All SQL fingerprints ranked by estimated DB cost.</p>
+  </div>
+</div>
+
+<%= render "active_usage/web/shared/filters" %>
+
+<% top_db_cost_max = @sql_queries.map { |r| r[:db_cost] }.max.to_f %>
+
+<div class="au-card">
+  <div class="au-metric-list">
+    <% if @sql_queries.empty? %>
+      <div class="au-empty">
+        <div class="au-empty-icon">◆</div>
+        <p class="au-empty-title">No SQL queries found</p>
+        <p class="au-empty-desc">SQL query data appears once events with SQL activity are recorded.</p>
+      </div>
+    <% else %>
+      <% @sql_queries.each do |row| %>
+        <div class="au-metric-row">
+          <div class="au-metric-row-top">
+            <div class="au-metric-main">
+              <div class="au-sql-badges au-sql-badges--gap">
+                <span class="au-badge au-badge--sql"><%= row[:query_type] %></span>
+                <% if row[:relation_name].present? %>
+                  <span class="au-badge au-badge--custom"><%= row[:relation_name] %></span>
+                <% end %>
+              </div>
+              <div class="au-sql-fp"><%= row[:fingerprint] %></div>
+              <div class="au-metric-meta">
+                <%= row[:calls] %> calls
+                · <%= human_duration_ms(row[:sql_duration_ms]) %> total SQL
+                · <%= row[:events_count] %> events
+                <% if row[:last_seen_at] %>
+                  · last seen <%= time_ago_in_words(row[:last_seen_at]) %> ago
+                <% end %>
+              </div>
+            </div>
+            <div class="au-metric-stats">
+              <div class="au-metric-value"><%= money(row[:db_cost]) %></div>
+              <div class="au-metric-meta">DB cost</div>
+            </div>
+          </div>
+          <div class="au-progress-track">
+            <div class="au-progress-fill au-progress-fill--db" style="width: <%= progress_width(row[:db_cost], top_db_cost_max) %>%"></div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+  <%= render "active_usage/web/shared/pagination", paginator: @paginator %>
+</div>

@@ -1,0 +1,35 @@
+<%= form_with(model: cost_rate) do |form| %>
+  <div class="au-form">
+    <div class="au-form-field">
+      <%= form.label :compute_cost_per_hour, "Compute cost per hour", class: "au-form-label" %>
+      <p class="au-form-hint">How much your application server costs per hour of runtime.</p>
+      <div class="au-input-group">
+        <span class="au-input-affix">$</span>
+        <%= form.text_field :compute_cost_per_hour, class: "au-input", placeholder: "0.0000", step: "0.0001" %>
+        <span class="au-input-affix au-input-affix--suffix">/ hour</span>
+      </div>
+      <% cost_rate.errors[:compute_cost_per_hour].each do |msg| %>
+        <p class="au-field-error"><%= msg %></p>
+      <% end %>
+    </div>
+
+    <div class="au-form-field">
+      <%= form.label :database_cost_per_hour, "Database cost per hour", class: "au-form-label" %>
+      <p class="au-form-hint">How much your database costs per hour of query time.</p>
+      <div class="au-input-group">
+        <span class="au-input-affix">$</span>
+        <%= form.text_field :database_cost_per_hour, class: "au-input", placeholder: "0.0000", step: "0.0001" %>
+        <span class="au-input-affix au-input-affix--suffix">/ hour</span>
+      </div>
+      <% cost_rate.errors[:database_cost_per_hour].each do |msg| %>
+        <p class="au-field-error"><%= msg %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="au-card-footer">
+    <span class="au-card-footer-label">Saving creates a new version — existing data keeps its previous rates.</span>
+    <%= link_to "Cancel", cost_rates_path, class: "au-btn" %>
+    <%= form.submit "Save", class: "au-btn au-btn-primary" %>
+  </div>
+<% end %>
