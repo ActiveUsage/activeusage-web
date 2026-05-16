@@ -1,0 +1,32 @@
+<%#
+  Time-range + event-type filter bar. Accepts:
+    time_param: the URL param name (defaults to "range")
+    time_value: the currently active value
+    label:      filter group label (defaults to "Period")
+%>
+<% time_param ||= "range" %>
+<% time_value ||= (@range || @period) %>
+<% label      ||= "Period" %>
+
+<div class="au-filter-bar">
+  <div class="au-filter-group">
+    <span class="au-filter-label"><%= label %></span>
+    <div class="au-filter-options">
+      <% %w[1h 24h 7d 30d].each do |value| %>
+        <%= link_to value,
+              url_for(time_param.to_sym => value, event_type: @event_type, only_path: true),
+              class: "au-filter-btn#{' au-filter-btn--active' if time_value == value}" %>
+      <% end %>
+    </div>
+  </div>
+  <div class="au-filter-group">
+    <span class="au-filter-label">Type</span>
+    <div class="au-filter-options">
+      <% [["All", "all"], ["Requests", "request"], ["Jobs", "job"], ["Tasks", "task"]].each do |btn_label, value| %>
+        <%= link_to btn_label,
+              url_for(time_param.to_sym => time_value, event_type: value, only_path: true),
+              class: "au-filter-btn#{' au-filter-btn--active' if @event_type == value}" %>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -13,3 +13,17 @@ if ActiveSupport::TestCase.respond_to?(:fixture_paths=)
   ActiveSupport::TestCase.file_fixture_path = File.expand_path("fixtures", __dir__) + "/files"
   ActiveSupport::TestCase.fixtures :all
 end
+
+module AuthHelpers
+  AUTH_PASSWORD = "secret"
+
+  def setup_auth
+    ENV["ACTIVEUSAGE_PASSWORD"] = AUTH_PASSWORD
+  end
+
+  def auth_headers
+    { "HTTP_AUTHORIZATION" => ActionController::HttpAuthentication::Basic.encode_credentials("activeusage", AUTH_PASSWORD) }
+  end
+end
+
+ActionDispatch::IntegrationTest.include(AuthHelpers)

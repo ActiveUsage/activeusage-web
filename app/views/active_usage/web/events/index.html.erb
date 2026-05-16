@@ -1,0 +1,44 @@
+<% content_for :title, "Events" %>
+
+<div class="au-page-header">
+  <div>
+    <h1 class="au-page-title">Events</h1>
+    <p class="au-page-sub">Full event stream, most recent first.</p>
+  </div>
+</div>
+
+<%= render "active_usage/web/shared/filters" %>
+
+<div class="au-card">
+  <div class="au-event-list">
+    <% if @events.empty? %>
+      <div class="au-empty">
+        <div class="au-empty-icon">◆</div>
+        <p class="au-empty-title">No events found</p>
+        <p class="au-empty-desc">No events recorded in the selected time window.</p>
+      </div>
+    <% else %>
+      <% @events.each do |event| %>
+        <div class="au-event-row">
+          <div class="au-event-top">
+            <span class="au-badge <%= event_type_class(event.event_type) %>"><%= event.event_type %></span>
+            <span class="au-event-name"><%= event.name %></span>
+            <span class="au-metric-value au-shrink-0"><%= money(event.estimated_cost) %></span>
+          </div>
+          <div class="au-event-meta">
+            <%= time_ago_in_words(event.finished_at) %> ago
+            · <%= human_duration_ms(event.duration_ms) %>
+            <% if event.sql_duration_ms.to_f.positive? %>
+              · SQL <%= human_duration_ms(event.sql_duration_ms) %>
+            <% end %>
+            <% if event.sql_calls.to_i.positive? %>
+              · <%= event.sql_calls %> queries
+            <% end %>
+          </div>
+          <%= event_tags_html(event.tags) %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+  <%= render "active_usage/web/shared/pagination", paginator: @paginator %>
+</div>

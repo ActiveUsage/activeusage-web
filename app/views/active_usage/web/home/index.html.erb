@@ -1,6 +1,112 @@
+<% content_for :title, "Overview" %>
+
 <div class="au-page-header">
   <div>
     <h1 class="au-page-title">Overview</h1>
-    <p class="au-page-sub">ActiveUsage cost observability dashboard.</p>
+    <p class="au-page-sub">Cost observability for your Rails app.</p>
   </div>
+</div>
+
+<%= render "active_usage/web/shared/filters" %>
+
+<div class="au-stat-cards">
+  <div class="au-stat-card">
+    <p class="au-stat-label">Tracked events</p>
+    <div class="au-stat-value"><%= @summary[:events_count] %></div>
+    <p class="au-stat-desc"><%= range_label(@range) %></p>
+  </div>
+  <div class="au-stat-card au-stat-card--red">
+    <p class="au-stat-label au-stat-label--red">Estimated cost</p>
+    <div class="au-stat-value"><%= money(@summary[:total_estimated_cost]) %></div>
+    <p class="au-stat-desc">Based on current filters.</p>
+  </div>
+</div>
+
+<div class="au-stack">
+
+  <%# ── Top workloads ── %>
+  <% top_cost_max = @top_workloads.map { |r| r[:total_cost] }.max.to_f %>
+  <div class="au-card">
+    <div class="au-section-hd">
+      <div>
+        <p class="au-section-title">Top workloads</p>
+        <p class="au-section-sub">Ranked by estimated cost · <%= range_label(@range) %></p>
+      </div>
+      <%= link_to "View all →", workloads_path(range: @range, event_type: @event_type), class: "au-section-link" %>
+    </div>
+    <div class="au-metric-list">
+      <% if @top_workloads.empty? %>
+        <div class="au-empty au-empty--sm">
+          <p class="au-empty-title">No events yet</p>
+          <p class="au-empty-desc">Trigger a request or background job to populate this section.</p>
+        </div>
+      <% else %>
+        <% @top_workloads.each do |row| %>
+          <div class="au-metric-row">
+            <div class="au-metric-row-top">
+              <div class="au-metric-main">
+                <div class="au-metric-name-row">
+                  <span class="au-badge <%= event_type_class(row[:event_type]) %>"><%= row[:event_type] %></span>
+                  <div class="au-metric-name"><%= row[:name] %></div>
+                </div>
+                <div class="au-metric-meta"><%= row[:events_count] %> events</div>
+              </div>
+              <div class="au-metric-stats">
+                <div class="au-metric-value"><%= money(row[:total_cost]) %></div>
+                <div class="au-metric-meta">estimated total</div>
+              </div>
+            </div>
+            <div class="au-progress-track">
+              <div class="au-progress-fill" style="width: <%= progress_width(row[:total_cost], top_cost_max) %>%"></div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── Top SQL queries ── %>
+  <% top_sql_max = @top_sql_queries.map { |r| r[:db_cost] }.max.to_f %>
+  <div class="au-card">
+    <div class="au-section-hd">
+      <div>
+        <p class="au-section-title">Top SQL queries</p>
+        <p class="au-section-sub">Ranked by estimated DB cost · <%= range_label(@range) %></p>
+      </div>
+      <%= link_to "View all →", sql_queries_path(range: @range, event_type: @event_type), class: "au-section-link" %>
+    </div>
+    <div class="au-metric-list">
+      <% if @top_sql_queries.empty? %>
+        <div class="au-empty au-empty--sm">
+          <p class="au-empty-title">No SQL fingerprints</p>
+          <p class="au-empty-desc">SQL query data appears once events with SQL activity are recorded.</p>
+        </div>
+      <% else %>
+        <% @top_sql_queries.each do |row| %>
+          <div class="au-metric-row">
+            <div class="au-metric-row-top">
+              <div class="au-metric-main">
+                <div class="au-sql-badges">
+                  <span class="au-badge au-badge--sql"><%= row[:query_type] %></span>
+                  <% if row[:relation_name].present? %>
+                    <span class="au-badge au-badge--custom"><%= row[:relation_name] %></span>
+                  <% end %>
+                </div>
+                <div class="au-sql-fp"><%= row[:fingerprint] %></div>
+                <div class="au-metric-meta"><%= row[:calls] %> calls · <%= row[:sql_duration_ms] %>ms total SQL</div>
+              </div>
+              <div class="au-metric-stats">
+                <div class="au-metric-value"><%= money(row[:db_cost]) %></div>
+                <div class="au-metric-meta">DB cost</div>
+              </div>
+            </div>
+            <div class="au-progress-track">
+              <div class="au-progress-fill au-progress-fill--db" style="width: <%= progress_width(row[:db_cost], top_sql_max) %>%"></div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
 </div>

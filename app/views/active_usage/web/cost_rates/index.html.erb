@@ -1,0 +1,80 @@
+<% content_for :title, "Cost rates" %>
+
+<div class="au-page-header">
+  <div>
+    <h1 class="au-page-title">Cost rates</h1>
+    <p class="au-page-sub">Hourly rates used to estimate event costs.</p>
+  </div>
+  <div class="au-page-header-actions">
+    <%= link_to "Update rates", new_cost_rate_path, class: "au-btn au-btn-primary" %>
+  </div>
+</div>
+
+<% if @cost_rates.any? %>
+  <% current = @cost_rates.first %>
+  <% history = @cost_rates.drop(1) %>
+
+  <div class="au-stack">
+    <%# ── Current rates ── %>
+    <div>
+      <p class="au-subhead">Current rates</p>
+      <div class="au-card">
+        <div class="au-section-hd">
+          <div>
+            <p class="au-section-title">Active since <%= current.created_at.strftime("%-d %b %Y, %H:%M") %></p>
+            <p class="au-section-sub">All new events use these rates.</p>
+          </div>
+          <span class="au-badge-current">Current</span>
+        </div>
+        <div class="au-rates">
+          <div class="au-rate">
+            <p class="au-rate-label">Compute</p>
+            <div class="au-rate-value">
+              <%= money(current.compute_cost_per_hour) %><span class="au-rate-unit">/ hour</span>
+            </div>
+          </div>
+          <div class="au-rate">
+            <p class="au-rate-label">Database</p>
+            <div class="au-rate-value">
+              <%= money(current.database_cost_per_hour) %><span class="au-rate-unit">/ hour</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# ── History ── %>
+    <% if history.any? %>
+      <div>
+        <p class="au-subhead">History · <%= history.size %> previous <%= "version".pluralize(history.size) %></p>
+        <div class="au-card">
+          <% history.each do |rate| %>
+            <div class="au-history-row">
+              <span class="au-history-date">
+                <%= rate.created_at.strftime("%-d %b %Y, %H:%M") %>
+              </span>
+              <span class="au-history-rate">
+                <span class="au-history-rate-label">compute</span><%= money(rate.compute_cost_per_hour) %>/h
+              </span>
+              <span class="au-history-rate">
+                <span class="au-history-rate-label">db</span><%= money(rate.database_cost_per_hour) %>/h
+              </span>
+              <span class="au-metric-meta"><%= time_ago_in_words(rate.created_at) %> ago</span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="au-card">
+    <div class="au-empty">
+      <div class="au-empty-icon">◆</div>
+      <p class="au-empty-title">No cost rates yet</p>
+      <p class="au-empty-desc">Add the first version to start tracking usage costs.</p>
+      <div style="margin-top: 14px;">
+        <%= link_to "Set up rates", new_cost_rate_path, class: "au-btn au-btn-primary" %>
+      </div>
+    </div>
+  </div>
+<% end %>

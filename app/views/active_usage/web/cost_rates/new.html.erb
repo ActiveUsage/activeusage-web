@@ -1,0 +1,16 @@
+<% content_for :title, "Update cost rates" %>
+
+<%= link_to cost_rates_path, class: "au-page-back" do %>
+  ← Back to Cost rates
+<% end %>
+
+<div class="au-page-header">
+  <div>
+    <h1 class="au-page-title">Update cost rates</h1>
+    <p class="au-page-sub">New values become active immediately. Previous rates remain in history but no longer apply.</p>
+  </div>
+</div>
+
+<div class="au-card">
+  <%= render "form", cost_rate: @cost_rate %>
+</div>

@@ -1,0 +1,123 @@
+<% content_for :title, "Trends" %>
+
+<div class="au-page-header">
+  <div>
+    <h1 class="au-page-title">Trends</h1>
+    <p class="au-page-sub">Cost over time and period-over-period comparison.</p>
+  </div>
+</div>
+
+<%= render "active_usage/web/shared/filters", time_param: "period", time_value: @period %>
+
+<div class="au-stack">
+
+<%# ── Cost chart ── %>
+<% max_cost = @chart_data.flat_map { |d| [d[:total_cost], d[:prev_total_cost]] }.max.to_f %>
+<div class="au-card">
+  <div class="au-section-hd">
+    <div>
+      <p class="au-section-title">Cost over time</p>
+      <p class="au-section-sub"><%= trends_chart_subtitle(@period, @current_period_start) %></p>
+    </div>
+    <div class="au-section-actions">
+      <span class="au-chart-legend au-chart-legend--prev">Prev <%= @period %></span>
+      <span class="au-chart-legend au-chart-legend--cur">Current <%= @period %></span>
+    </div>
+  </div>
+
+  <% if max_cost == 0.0 %>
+    <div class="au-card-pad">
+      <div class="au-empty au-empty--sm">
+        <p class="au-empty-title">No cost data</p>
+        <p class="au-empty-desc">No events recorded in this period.</p>
+      </div>
+    </div>
+  <% else %>
+    <div class="au-chart">
+      <div class="au-chart-bars">
+        <% @chart_data.each do |bucket| %>
+          <div class="au-chart-col">
+            <div class="au-chart-tooltip" role="tooltip">
+              <div class="au-chart-tooltip-label"><%= bucket[:label] %></div>
+              <div class="au-chart-tooltip-row">
+                <span class="au-chart-tooltip-dot au-chart-tooltip-dot--cur"></span>
+                <span class="au-chart-tooltip-period">Current</span>
+                <span class="au-chart-tooltip-value"><%= money(bucket[:total_cost]) %></span>
+                <span class="au-chart-tooltip-count"><%= bucket[:events_count] %> events</span>
+              </div>
+              <div class="au-chart-tooltip-row">
+                <span class="au-chart-tooltip-dot au-chart-tooltip-dot--prev"></span>
+                <span class="au-chart-tooltip-period">Previous</span>
+                <span class="au-chart-tooltip-value"><%= money(bucket[:prev_total_cost]) %></span>
+                <span class="au-chart-tooltip-count"><%= bucket[:prev_events_count] %> events</span>
+              </div>
+            </div>
+            <div class="au-chart-bar-wrap">
+              <div class="au-chart-bar au-chart-bar--prev" style="height: <%= bar_height_pct(bucket[:prev_total_cost], max_cost) %>%"></div>
+              <div class="au-chart-bar au-chart-bar--cur"  style="height: <%= bar_height_pct(bucket[:total_cost],      max_cost) %>%"></div>
+            </div>
+            <div class="au-chart-x-label"><%= bucket[:label] %></div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<%# ── Period comparison ── %>
+<% comp_max = @comparison.map { |r| [r[:current_cost], r[:previous_cost]] }.flatten.max.to_f %>
+<div class="au-card">
+  <div class="au-section-hd">
+    <div>
+      <p class="au-section-title">Workload comparison</p>
+      <p class="au-section-sub">
+        <span class="au-comp-period au-comp-period--prev">Prev <%= @period %></span>
+        vs
+        <span class="au-comp-period au-comp-period--cur">Current <%= @period %></span>
+      </p>
+    </div>
+  </div>
+
+  <% if @comparison.empty? %>
+    <div class="au-card-pad">
+      <div class="au-empty au-empty--sm">
+        <p class="au-empty-title">No data</p>
+        <p class="au-empty-desc">No events recorded in either period.</p>
+      </div>
+    </div>
+  <% else %>
+    <div class="au-comp-table">
+      <div class="au-comp-header">
+        <div class="au-comp-col au-comp-col--name">Workload</div>
+        <div class="au-comp-col au-comp-col--cost">Prev period</div>
+        <div class="au-comp-col au-comp-col--cost">Current period</div>
+        <div class="au-comp-col au-comp-col--delta">Change</div>
+        <div class="au-comp-col au-comp-col--calls">Calls</div>
+      </div>
+      <% @comparison.each do |row| %>
+        <div class="au-comp-row">
+          <div class="au-comp-col au-comp-col--name">
+            <div class="au-comp-name-wrap">
+              <span class="au-badge <%= event_type_class(row[:event_type]) %>"><%= row[:event_type] %></span>
+              <span class="au-comp-name"><%= row[:name] %></span>
+            </div>
+            <div class="au-comp-bar-track">
+              <div class="au-comp-bar au-comp-bar--prev" style="width: <%= progress_width(row[:previous_cost], comp_max) %>%"></div>
+              <div class="au-comp-bar au-comp-bar--cur"  style="width: <%= progress_width(row[:current_cost],  comp_max) %>%"></div>
+            </div>
+          </div>
+          <div class="au-comp-col au-comp-col--cost au-comp-col--muted"><%= money(row[:previous_cost]) %></div>
+          <div class="au-comp-col au-comp-col--cost"><%= money(row[:current_cost]) %></div>
+          <div class="au-comp-col au-comp-col--delta">
+            <span class="au-delta <%= delta_class(row[:delta_pct]) %>"><%= delta_label(row[:delta_pct]) %></span>
+          </div>
+          <div class="au-comp-col au-comp-col--calls au-comp-col--muted">
+            <%= row[:current_count] %> / <%= row[:previous_count] %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+</div>
